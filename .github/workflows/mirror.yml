@@ -1,0 +1,31 @@
+name: Mirror Image to GHCR
+
+on:
+  workflow_dispatch: # Allows you to run this manually whenever you want
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull, Tag, and Push
+        run: |
+          # 1. Pull the original image from Docker Hub
+          docker pull devlikeapro/waha:chrome-2026.4.1
+          
+          # 2. Tag it for your GitHub account
+          # Replace 'your-username' with your actual GitHub username
+          docker tag devlikeapro/waha:chrome-2026.4.1 ghcr.io/${{ github.repository_owner }}/waha:chrome-2026.4.1
+          
+          # 3. Push it to your GitHub Container Registry
+          docker push ghcr.io/${{ github.repository_owner }}/waha:chrome-2026.4.1
